@@ -17,9 +17,8 @@ const main = async () => {
         iconEmoji: core.getInput('slack-icon-emoji')
     }
 
-    console.log(message.webHook);
-
     await axios.post(message.webHook, MessageFormatter.format(message))
+    
   } catch (error) {
     core.setOutput('result', 'failure');
     core.setFailed(error.message);

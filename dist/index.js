@@ -34,7 +34,7 @@ class MessageFormatter {
               fields: [
                 {
                   type: 'mrkdwn',
-                  text: `*Url:*\n<${context.payload.pull_request.html_url}|PR URL>`
+                  text: `*Url:*\n<${context.payload.pull_request.html_url}|Pull Request URL>`
                 },
                 {
                   type: 'mrkdwn',
@@ -74,17 +74,14 @@ class MessageFormatter {
     };
   }
 
-  static transformColor(jobStatus) {
+  static transformColor(jobStatus, planStatus) {
     let color = '';
-    switch (jobStatus) {
-      case 'success':
-        color = '#32CD32';
-      case 'cancelled':
-        color = '#808080';
-      case 'failure':
-        color = '#FF0000';
-      default:
-        color = '#d3d3d3';
+    if (jobStatus === 'success' || planStatus === 'success') {
+      color = '#32CD32';
+    } else if (jobStatus === 'failure' || planStatus === 'failure') {
+      color = '#FF0000';
+    } else {
+      color = '#d3d3d3';
     }
     return color;
   }
@@ -8786,9 +8783,8 @@ const main = async () => {
         iconEmoji: core.getInput('slack-icon-emoji')
     }
 
-    console.log(message.webHook);
-
     await axios.post(message.webHook, MessageFormatter.format(message))
+    
   } catch (error) {
     core.setOutput('result', 'failure');
     core.setFailed(error.message);
