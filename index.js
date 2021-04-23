@@ -19,10 +19,7 @@ const main = async () => {
 
     console.log(message.webHook);
 
-    await axios.post({
-        url: message.webHook,
-        data: MessageFormatter.format(message)
-    })
+    await axios.post(message.webHook, MessageFormatter.format(message))
   } catch (error) {
     core.setOutput('result', 'failure');
     core.setFailed(error.message);
