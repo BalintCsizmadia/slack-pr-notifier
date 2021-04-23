@@ -4,7 +4,7 @@
 /***/ 1823:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-const github =  __nccwpck_require__(5455);
+const github = __nccwpck_require__(5455);
 
 class MessageFormatter {
   static format(message) {
@@ -13,15 +13,13 @@ class MessageFormatter {
     if (context.payload.repository != null) {
       htmlUrl = context.payload.repository.html_url;
     }
-    console.log(htmlUrl);
     const runUrl = `${htmlUrl}/actions/runs/${process.env.GITHUB_RUN_ID}`;
-    console.log(runUrl);
     const commitId = context.sha.substring(0, 7);
-    console.log(commitId);
+
     return {
       attachments: [
         {
-          color: 'good',
+          color: this.transformColor(message.jobStatus),
           blocks: [
             {
               type: 'header',
@@ -36,12 +34,11 @@ class MessageFormatter {
               fields: [
                 {
                   type: 'mrkdwn',
-                  text: `*Url:*\n<url|PR URL>`
-                  // text: `*Url:*\n<${context.payload.pr.url}|PR URL>`
+                  text: `*Url:*\n<${context.payload.pull_request.html_url}|PR URL>`
                 },
                 {
                   type: 'mrkdwn',
-                  text: `*Created by:*\n<example.com|${message.createdBy}>`
+                  text: `*Created by:*\n<https://github.com/${message.createdBy}|${message.createdBy}>`
                 }
               ]
             },
@@ -63,8 +60,7 @@ class MessageFormatter {
               fields: [
                 {
                   type: 'mrkdwn',
-                  text: `*Url:*\n<commit url|Commit>`
-                  // text: `*Commit:*\n<${context.payload.repository.compare_url}|${commitId}>`
+                  text: `*Commit:*\n<${htmlUrl}/commit/${context.sha}|${commitId}>`
                 },
                 {
                   type: 'mrkdwn',
@@ -75,11 +71,27 @@ class MessageFormatter {
           ]
         }
       ]
+    };
+  }
+
+  static transformColor(jobStatus) {
+    let color = '';
+    switch (jobStatus) {
+      case 'success':
+        color = '#32CD32';
+      case 'cancelled':
+        color = '#808080';
+      case 'failure':
+        color = '#FF0000';
+      default:
+        color = '#d3d3d3';
     }
-  };
+    return color;
+  }
 }
 
 module.exports = MessageFormatter;
+
 
 /***/ }),
 
