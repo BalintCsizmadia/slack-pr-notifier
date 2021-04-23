@@ -16,11 +16,10 @@ class MessageFormatter {
           color: this.transformColor(message.jobStatus),
           blocks: [
             {
-              type: 'header',
+              type: 'section',
               text: {
-                type: 'plain_text',
-                text: `${message.title}`,
-                emoji: true
+                type: 'mrkdwn',
+                text: `*${message.title}*`
               }
             },
             {
@@ -28,7 +27,7 @@ class MessageFormatter {
               fields: [
                 {
                   type: 'mrkdwn',
-                  text: `*Url:*\n<${context.payload.pull_request.html_url}|Pull Request URL>`
+                  text: `*URL:*\n<${context.payload.pull_request.html_url}|Pull Request URL>`
                 },
                 {
                   type: 'mrkdwn',
@@ -58,7 +57,7 @@ class MessageFormatter {
                 },
                 {
                   type: 'mrkdwn',
-                  text: `*Actions:*\n<${runUrl}|Action url>`
+                  text: `*Actions:*\n<${runUrl}|${process.env.GITHUB_WORKFLOW}>`
                 }
               ]
             }
@@ -71,7 +70,7 @@ class MessageFormatter {
   static transformColor(jobStatus, planStatus) {
     let color = '';
     if (jobStatus === 'success' || planStatus === 'success') {
-      color = '#32CD32';
+      color = '#2eb886';
     } else if (jobStatus === 'failure' || planStatus === 'failure') {
       color = '#FF0000';
     } else {
