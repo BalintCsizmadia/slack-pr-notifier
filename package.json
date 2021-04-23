@@ -1,0 +1,21 @@
+{
+  "name": "slack-pr-notifier",
+  "version": "0.0.1",
+  "description": "Slack Notifier",
+  "main": "index.js",
+  "engines": {
+    "node": "14.15.1"
+  },
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "BalintCsizmadia",
+  "license": "MIT",
+  "dependencies": {
+    "@actions/core": "^1.2.7",
+    "@actions/github": "^4.0.0",
+    "@vercel/ncc": "^0.28.3",
+    "axios": "^0.21.1"
+  }
+}

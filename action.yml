@@ -1,0 +1,39 @@
+name: 'Slack Notifier'
+description: 'Post to Slack'
+inputs:
+  slack-webHook:
+    description: 'slack webhook'
+    required: true
+  slack-channel:
+    description: 'slack channel'
+    required: false
+  job_status:
+    description: 'job status'
+    required: true
+  plan-status:
+    description: 'plan status'
+    required: true
+  slack-title:
+    description: 'title'
+    required: true
+  parameters:
+    description: 'parameters'
+    required: false
+  created-by:
+    description: 'created by'
+    required: false
+  slack-username:
+    description: 'username'
+    required: false
+  slack-icon:
+    description: 'icon'
+    required: false
+  slack-icon-emoji:
+    description: 'icon emoji'
+    required: false
+outputs:
+  result:
+    description: 'result'
+runs:
+  using: 'node14'
+  main: 'index.js'
