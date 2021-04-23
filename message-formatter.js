@@ -1,6 +1,6 @@
-import github from '@actions/github';
+const github =  require('@actions/github');
 
-export default class MessageFormatter {
+class MessageFormatter {
   static format(message) {
     let context = github.context;
     let htmlUrl = '';
@@ -67,3 +67,5 @@ export default class MessageFormatter {
     }
   };
 }
+
+module.exports = MessageFormatter;

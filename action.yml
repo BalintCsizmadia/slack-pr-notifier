@@ -7,7 +7,7 @@ inputs:
   slack-channel:
     description: 'slack channel'
     required: false
-  job_status:
+  job-status:
     description: 'job status'
     required: true
   plan-status:

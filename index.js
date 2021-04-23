@@ -1,6 +1,6 @@
-import axios from 'axios';
-import core from '@actions/core';
-import MessageFormatter from './message-formatter.js';
+const axios = require('axios');
+const core = require('@actions/core');
+const MessageFormatter = require('./message-formatter.js')
 
 const main = async () => {
   try {
