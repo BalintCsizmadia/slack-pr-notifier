@@ -13,8 +13,11 @@ class MessageFormatter {
     if (context.payload.repository != null) {
       htmlUrl = context.payload.repository.html_url;
     }
+    console.log(htmlUrl);
     const runUrl = `${htmlUrl}/actions/runs/${process.env.GITHUB_RUN_ID}`;
+    console.log(runUrl);
     const commitId = context.sha.substring(0, 7);
+    console.log(commitId);
     return {
       attachments: [
         {
@@ -33,7 +36,8 @@ class MessageFormatter {
               fields: [
                 {
                   type: 'mrkdwn',
-                  text: `*Url:*\n<${context.payload.pr.url}|PR URL>`
+                  text: `*Url:*\n<url|PR URL>`
+                  // text: `*Url:*\n<${context.payload.pr.url}|PR URL>`
                 },
                 {
                   type: 'mrkdwn',
@@ -59,7 +63,8 @@ class MessageFormatter {
               fields: [
                 {
                   type: 'mrkdwn',
-                  text: `*Commit:*\n<${context.payload.repository.compare_url}|${commitId}>`
+                  text: `*Url:*\n<commit url|Commit>`
+                  // text: `*Commit:*\n<${context.payload.repository.compare_url}|${commitId}>`
                 },
                 {
                   type: 'mrkdwn',
@@ -8768,6 +8773,8 @@ const main = async () => {
         icon: core.getInput('slack-icon'),
         iconEmoji: core.getInput('slack-icon-emoji')
     }
+
+    console.log(message.webHook);
 
     await axios.post({
         url: message.webHook,

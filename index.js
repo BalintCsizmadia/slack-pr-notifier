@@ -17,6 +17,8 @@ const main = async () => {
         iconEmoji: core.getInput('slack-icon-emoji')
     }
 
+    console.log(message.webHook);
+
     await axios.post({
         url: message.webHook,
         data: MessageFormatter.format(message)
