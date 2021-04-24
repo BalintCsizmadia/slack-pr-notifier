@@ -1,5 +1,5 @@
 
-### Post notifications to slack (triggered by pull request)
+### Post notifications to Slack (triggered by pull request)
 ---
 #### Example:
 ```
