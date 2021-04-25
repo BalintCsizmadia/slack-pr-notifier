@@ -5,7 +5,7 @@ class MessageFormatter {
     const webhookPayload = github.context.payload;
     const htmlUrl = webhookPayload.repository ? webhookPayload.repository.html_url : '';
     const pullRequestUrl = webhookPayload.pull_request ? webhookPayload.pull_request.html_url : '';
-    const runUrl = `${htmlUrl}/actions/runs/${github.context.runId}`;
+    const runUrl = `${htmlUrl}/actions/runs/${process.env.GITHUB_RUN_ID}`;
     const commitId = github.context.sha.substring(0, 7);
 
     return {
@@ -25,7 +25,7 @@ class MessageFormatter {
             ]),
             this._createSectionWithFields([
               `*Commit:*\n<${htmlUrl}/commit/${github.context.sha}|${commitId}>`,
-              `*Actions:*\n<${runUrl}|${github.context.workflow}>`
+              `*Actions:*\n<${runUrl}|${process.env.GITHUB_WORKFLOW}>`
             ])
           ]
         }

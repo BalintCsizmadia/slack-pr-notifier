@@ -17,6 +17,8 @@ describe('MessageFormatter', () => {
       'https://repository_html_url',
       'https://pull_request_html_url'
     );
+    process.env.GITHUB_RUN_ID = 987654321;
+    process.env.GITHUB_WORKFLOW = 'workflow';
   });
 
   it('returns a properly formatted message', () => {
