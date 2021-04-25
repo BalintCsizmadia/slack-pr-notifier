@@ -12,7 +12,6 @@ class MessageFormatter {
       attachments: [
         {
           color: this._transformColor(message.jobStatus),
-          text: message.title,
           blocks: [
             this._createSection(message.title, 'title'),
             this._createSectionWithFields([
@@ -25,7 +24,7 @@ class MessageFormatter {
             ]),
             this._createSectionWithFields([
               `*Commit:*\n<${htmlUrl}/commit/${github.context.sha}|${commitId}>`,
-              `*Actions:*\n<${runUrl}|${process.env.GITHUB_WORKFLOW}>`
+              `*Actions:*\n<${runUrl}|${github.context.workflow}>`
             ])
           ]
         }

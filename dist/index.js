@@ -11,14 +11,13 @@ class MessageFormatter {
     const webhookPayload = github.context.payload;
     const htmlUrl = webhookPayload.repository ? webhookPayload.repository.html_url : '';
     const pullRequestUrl = webhookPayload.pull_request ? webhookPayload.pull_request.html_url : '';
-    const runUrl = `${htmlUrl}/actions/runs/${github.context.runId}`;
+    const runUrl = `${htmlUrl}/actions/runs/${process.env.GITHUB_RUN_ID}`;
     const commitId = github.context.sha.substring(0, 7);
 
     return {
       attachments: [
         {
           color: this._transformColor(message.jobStatus),
-          text: message.title,
           blocks: [
             this._createSection(message.title, 'title'),
             this._createSectionWithFields([

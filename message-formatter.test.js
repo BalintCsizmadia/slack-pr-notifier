@@ -33,7 +33,6 @@ describe('MessageFormatter', () => {
       attachments: [
         {
           color: '#2eb886',
-          text: "slack-title",
           blocks: [
             {
               type: 'section',
