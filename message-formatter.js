@@ -2,81 +2,65 @@ const github = require('@actions/github');
 
 class MessageFormatter {
   static format(message) {
-    let context = github.context;
-    let htmlUrl = '';
-    if (context.payload.repository != null) {
-      htmlUrl = context.payload.repository.html_url;
-    }
-    const runUrl = `${htmlUrl}/actions/runs/${process.env.GITHUB_RUN_ID}`;
-    const commitId = context.sha.substring(0, 7);
+    const webhookPayload = github.context.payload;
+    const htmlUrl = webhookPayload.repository ? webhookPayload.repository.html_url : '';
+    const pullRequestUrl = webhookPayload.pull_request ? webhookPayload.pull_request.html_url : '';
+    const runUrl = `${htmlUrl}/actions/runs/${github.context.runId}`;
+    const commitId = github.context.sha.substring(0, 7);
 
     return {
       attachments: [
         {
-          color: this.transformColor(message.jobStatus),
+          color: this._transformColor(message.jobStatus),
+          text: message.title,
           blocks: [
-            {
-              type: 'section',
-              text: {
-                type: 'mrkdwn',
-                text: `*${message.title}*`
-              }
-            },
-            {
-              type: 'section',
-              fields: [
-                {
-                  type: 'mrkdwn',
-                  text: `*URL:*\n<${context.payload.pull_request.html_url}|Pull Request URL>`
-                },
-                {
-                  type: 'mrkdwn',
-                  text: `*Created by:*\n<https://github.com/${message.createdBy}|${message.createdBy}>`
-                }
-              ]
-            },
-            {
-              type: 'section',
-              fields: [
-                {
-                  type: 'mrkdwn',
-                  text: `*Parameters:*\n${message.parameters}`
-                },
-                {
-                  type: 'mrkdwn',
-                  text: `*Terraform plan:*\n${message.planStatus}`
-                }
-              ]
-            },
-            {
-              type: 'section',
-              fields: [
-                {
-                  type: 'mrkdwn',
-                  text: `*Commit:*\n<${htmlUrl}/commit/${context.sha}|${commitId}>`
-                },
-                {
-                  type: 'mrkdwn',
-                  text: `*Actions:*\n<${runUrl}|${process.env.GITHUB_WORKFLOW}>`
-                }
-              ]
-            }
+            this._createSection(message.title, 'title'),
+            this._createSectionWithFields([
+              `*URL:*\n<${pullRequestUrl}|Pull Request URL>`,
+              `*Created by:*\n<https://github.com/${message.createdBy}|${message.createdBy}>`
+            ]),
+            this._createSectionWithFields([
+              `*Parameters:*\n${message.parameters}`,
+              `*Terraform plan:*\n${message.planStatus}`
+            ]),
+            this._createSectionWithFields([
+              `*Commit:*\n<${htmlUrl}/commit/${github.context.sha}|${commitId}>`,
+              `*Actions:*\n<${runUrl}|${github.context.workflow}>`
+            ])
           ]
         }
       ]
     };
   }
 
-  static transformColor(jobStatus, planStatus) {
-    let color = '';
+  static _transformColor(jobStatus, planStatus) {
+    let color = '#d3d3d3';
     if (jobStatus === 'success' || planStatus === 'success') {
       color = '#2eb886';
     } else if (jobStatus === 'failure' || planStatus === 'failure') {
       color = '#FF0000';
-    } else {
-      color = '#d3d3d3';
     }
     return color;
+  }
+
+  static _createSection(content, contentType = '') {
+    return {
+      type: 'section',
+      text: {
+        type: 'mrkdwn',
+        text: contentType === 'title' ? `*${content}*` : content
+      }
+    };
+  }
+
+  static _createSectionWithFields(textsForFields) {
+    return {
+      type: 'section',
+      fields: textsForFields.map((text) => ({
+        type: 'mrkdwn',
+        text
+      }))
+    };
   }
 }
 
