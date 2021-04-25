@@ -9,10 +9,19 @@ const github = __nccwpck_require__(5455);
 class MessageFormatter {
   static format(message) {
     const webhookPayload = github.context.payload;
-    const htmlUrl = webhookPayload.repository ? webhookPayload.repository.html_url : '';
-    const pullRequestUrl = webhookPayload.pull_request ? webhookPayload.pull_request.html_url : '';
+    const htmlUrl = webhookPayload.repository != null ? webhookPayload.repository.html_url : '';
+    const pullRequestUrl = webhookPayload.pull_request != null ? webhookPayload.pull_request.html_url : '';
     const runUrl = `${htmlUrl}/actions/runs/${process.env.GITHUB_RUN_ID}`;
     const commitId = github.context.sha.substring(0, 7);
+
+    console.log('Debug');
+    console.log(htmlUrl);
+    const tst = webhookPayload.repository ? webhookPayload.repository.html_url : '';
+    console.log(tst);
+    console.log(pullRequestUrl);
+    console.log(github.context.workflow);
+    console.log(github.context.runId);
+    console.log(runUrl);
 
     return {
       attachments: [
