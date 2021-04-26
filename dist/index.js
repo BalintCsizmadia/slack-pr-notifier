@@ -9958,7 +9958,7 @@ const main = async () => {
     const message = {
       webHook: core.getInput('slack-webHook'),
       channel: core.getInput('slack-channel'),
-      title: core.getInput('slack-text'),
+      text: core.getInput('slack-text'),
       username: core.getInput('slack-username'),
       icon: core.getInput('slack-icon'),
       iconEmoji: core.getInput('slack-icon-emoji'),
