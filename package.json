@@ -1,6 +1,6 @@
 {
   "name": "slack-pr-notifier",
-  "version": "0.1.2",
+  "version": "1.0.0",
   "description": "Slack Notifier",
   "main": "index.js",
   "scripts": {

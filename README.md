@@ -1,17 +1,28 @@
 
-### Post notifications to Slack (triggered by pull request)
+### Post notifications to Slack
 ---
-#### Example:
+#### Examples:
+##### Basic
 ```
 - name: Slack Notification
-    uses: BalintCsizmadia/slack-pr-notifier@v0.1.2
-    if: github.event_name == 'pull_request' && github.event.action == 'opened'
+    uses: BalintCsizmadia/slack-pr-notifier@v1.0.0
     with:
-      slack-webhook: '${{ secrets.WEBHOOK }}'
-      slack-channel: '${{ slack_channel }}'
-      slack-title: '${{ slack_title }}'
-      parameters: '${{ parameters }}'
-      created-by: '${{ github_actor }}'
-      job-status: '${{ job_status }}'
-      plan-status: '${{ terraform_plan_outcome }}'
+      slack-webhook: ${{ secrets.WEBHOOK }}
+      slack-channel: ${{ slack_channel }}
+      slack-text: ${{ slack_text }}
+      is-basic: true
+```
+##### Special (Post notification about Terraform plan status, triggered by Pull Request)
+```
+- name: Slack Notification
+    uses: BalintCsizmadia/slack-pr-notifier@v1.0.0
+    if: github.event_name == 'pull_request'
+    with:
+      slack-webhook: ${{ secrets.WEBHOOK }}
+      slack-channel: ${{ slack_channel }}
+      slack-text: ${{ slack_text }}
+      parameters: ${{ parameters }}
+      created-by: ${{ github_actor }}
+      job-status: ${{ job_status }}
+      plan-status: ${{ terraform_plan_outcome }}
 ```

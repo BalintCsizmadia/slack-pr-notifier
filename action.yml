@@ -9,12 +9,12 @@ inputs:
     required: false
   job-status:
     description: 'job status'
-    required: true
+    required: false
   plan-status:
     description: 'plan status'
-    required: true
-  slack-title:
-    description: 'title'
+    required: false
+  slack-text:
+    description: 'text'
     required: true
   parameters:
     description: 'parameters'
@@ -30,6 +30,8 @@ inputs:
     required: false
   slack-icon-emoji:
     description: 'icon emoji'
+    required: false
+  is-basic:
     required: false
 outputs:
   result:

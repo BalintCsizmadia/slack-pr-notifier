@@ -8,6 +8,17 @@ const github = __nccwpck_require__(5455);
 
 class MessageFormatter {
   static format(message) {
+    if (message.isBasic && (message.isBasic === true || message.isBasic === 'true')) {
+      return this._createBasicMessage(message.text);
+    }
+    if (github.context.eventName !== 'pull_request') {
+      throw new Error(
+        `Trigger event must be a 'pull_request' but it was a '${github.context.eventName}'`
+      );
+    }
+    if (this._missingParameters(message)) {
+      throw new Error(`Parameter(s) missing: ${this._missingParameters(message).join(', ')}`);
+    }
     const webhookPayload = github.context.payload;
     const htmlUrl = webhookPayload.repository ? webhookPayload.repository.html_url : '';
     const pullRequestUrl = webhookPayload.pull_request ? webhookPayload.pull_request.html_url : '';
@@ -19,7 +30,7 @@ class MessageFormatter {
         {
           color: this._transformColor(message.jobStatus),
           blocks: [
-            this._createSection(message.title, 'title'),
+            this._createSection(message.text, 'title'),
             this._createSectionWithFields([
               `*URL:*\n<${pullRequestUrl}|Pull Request URL>`,
               `*Created by:*\n<https://github.com/${message.createdBy}|${message.createdBy}>`
@@ -66,6 +77,29 @@ class MessageFormatter {
         text
       }))
     };
+  }
+
+  static _createBasicMessage(text) {
+    return {
+      blocks: [
+        {
+          type: 'section',
+          text: {
+            type: 'plain_text',
+            text,
+            emoji: true
+          }
+        }
+      ]
+    };
+  }
+
+  static _missingParameters(params) {
+    const whitelist = ['channel', 'username', 'icon', 'iconEmoji', 'isBasic'];
+    const missingParams = Object.entries(params).filter(
+      (param) => !param[1] && !whitelist.includes(param[0])
+    );
+    return missingParams.length > 0 ? missingParams.map((param) => param[0]) : null;
   }
 }
 
@@ -6792,8 +6826,9 @@ var assert = __nccwpck_require__(2357);
 var debug = __nccwpck_require__(5473);
 
 // Create handlers that pass events from native requests
+var events = ["abort", "aborted", "connect", "error", "socket", "timeout"];
 var eventHandlers = Object.create(null);
-["abort", "aborted", "connect", "error", "socket", "timeout"].forEach(function (event) {
+events.forEach(function (event) {
   eventHandlers[event] = function (arg1, arg2, arg3) {
     this._redirectable.emit(event, arg1, arg2, arg3);
   };
@@ -6848,9 +6883,7 @@ RedirectableRequest.prototype = Object.create(Writable.prototype);
 
 RedirectableRequest.prototype.abort = function () {
   // Abort the internal request
-  this._currentRequest.removeAllListeners();
-  this._currentRequest.on("error", noop);
-  this._currentRequest.abort();
+  abortRequest(this._currentRequest);
 
   // Abort this request
   this.emit("abort");
@@ -6941,8 +6974,14 @@ RedirectableRequest.prototype.setTimeout = function (msecs, callback) {
     this.on("timeout", callback);
   }
 
+  function destroyOnTimeout(socket) {
+    socket.setTimeout(msecs);
+    socket.removeListener("timeout", socket.destroy);
+    socket.addListener("timeout", socket.destroy);
+  }
+
   // Sets up a timer to trigger a timeout event
-  function startTimer() {
+  function startTimer(socket) {
     if (self._timeout) {
       clearTimeout(self._timeout);
     }
@@ -6950,6 +6989,7 @@ RedirectableRequest.prototype.setTimeout = function (msecs, callback) {
       self.emit("timeout");
       clearTimer();
     }, msecs);
+    destroyOnTimeout(socket);
   }
 
   // Prevent a timeout from triggering
@@ -6965,12 +7005,13 @@ RedirectableRequest.prototype.setTimeout = function (msecs, callback) {
 
   // Start the timer when the socket is opened
   if (this.socket) {
-    startTimer();
+    startTimer(this.socket);
   }
   else {
     this._currentRequest.once("socket", startTimer);
   }
 
+  this.on("socket", destroyOnTimeout);
   this.once("response", clearTimer);
   this.once("error", clearTimer);
 
@@ -7049,11 +7090,8 @@ RedirectableRequest.prototype._performRequest = function () {
 
   // Set up event handlers
   request._redirectable = this;
-  for (var event in eventHandlers) {
-    /* istanbul ignore else */
-    if (event) {
-      request.on(event, eventHandlers[event]);
-    }
+  for (var e = 0; e < events.length; e++) {
+    request.on(events[e], eventHandlers[events[e]]);
   }
 
   // End a redirected request
@@ -7111,9 +7149,7 @@ RedirectableRequest.prototype._processResponse = function (response) {
   if (location && this._options.followRedirects !== false &&
       statusCode >= 300 && statusCode < 400) {
     // Abort the current request
-    this._currentRequest.removeAllListeners();
-    this._currentRequest.on("error", noop);
-    this._currentRequest.abort();
+    abortRequest(this._currentRequest);
     // Discard the remainder of the response to avoid waiting for data
     response.destroy();
 
@@ -7303,6 +7339,14 @@ function createErrorType(code, defaultMessage) {
   CustomError.prototype.name = "Error [" + code + "]";
   CustomError.prototype.code = code;
   return CustomError;
+}
+
+function abortRequest(request) {
+  for (var e = 0; e < events.length; e++) {
+    request.removeListener(events[e], eventHandlers[events[e]]);
+  }
+  request.on("error", noop);
+  request.abort();
 }
 
 // Exports
@@ -9907,25 +9951,25 @@ var __webpack_exports__ = {};
 (() => {
 const axios = __nccwpck_require__(5347);
 const core = __nccwpck_require__(1279);
-const MessageFormatter = __nccwpck_require__(1823)
+const MessageFormatter = __nccwpck_require__(1823);
 
 const main = async () => {
   try {
     const message = {
-        webHook: core.getInput('slack-webHook'),
-        channel: core.getInput('slack-channel'),
-        title: core.getInput('slack-title'),
-        parameters: core.getInput('parameters'),
-        createdBy: core.getInput('created-by'),
-        jobStatus: core.getInput('job-status'),
-        planStatus: core.getInput('plan-status'),
-        username: core.getInput('slack-username'),
-        icon: core.getInput('slack-icon'),
-        iconEmoji: core.getInput('slack-icon-emoji')
-    }
+      webHook: core.getInput('slack-webHook'),
+      channel: core.getInput('slack-channel'),
+      title: core.getInput('slack-text'),
+      username: core.getInput('slack-username'),
+      icon: core.getInput('slack-icon'),
+      iconEmoji: core.getInput('slack-icon-emoji'),
+      parameters: core.getInput('parameters') || null,
+      createdBy: core.getInput('created-by') || null,
+      jobStatus: core.getInput('job-status') || null,
+      planStatus: core.getInput('plan-status') || null,
+      isBasic: core.getInput('is-basic') || null
+    };
 
-    await axios.post(message.webHook, MessageFormatter.format(message))
-    
+    await axios.post(message.webHook, MessageFormatter.format(message));
   } catch (error) {
     core.setOutput('result', 'failure');
     core.setFailed(error.message);
