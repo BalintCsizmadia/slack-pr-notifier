@@ -20,9 +20,10 @@ class MessageFormatter {
     const commitId = github.context.sha.substring(0, 7);
 
     return {
+      text: message.text,
       attachments: [
         {
-          color: this._transformColor(message.jobStatus),
+          color: this._transformColor(message.jobStatus, message.planStatus),
           blocks: [
             this._createSection(message.text, 'title'),
             this._createSectionWithFields([
@@ -44,10 +45,10 @@ class MessageFormatter {
   }
 
   static _transformColor(jobStatus, planStatus) {
-    let color = '#d3d3d3';
-    if (jobStatus === 'success' || planStatus === 'success') {
+    let color;
+    if ((jobStatus === 'success' && planStatus === 'success') || planStatus === 'success') {
       color = '#2eb886';
-    } else if (jobStatus === 'failure' || planStatus === 'failure') {
+    } else {
       color = '#FF0000';
     }
     return color;

@@ -15,6 +15,7 @@ describe('MessageFormatter', () => {
 
   it('returns a properly formatted message', () => {
     const expectedMessage = {
+      text: 'text',
       attachments: [
         {
           color: '#2eb886',
@@ -71,6 +72,69 @@ describe('MessageFormatter', () => {
     };
 
     const message = MessageFormatter.format(createMessage());
+
+    expect(message).toEqual(expectedMessage);
+  });
+
+  it('returns a properly formatted message if Terraform plan has been failed', () => {
+    const expectedMessage = {
+      text: 'text',
+      attachments: [
+        {
+          color: '#FF0000',
+          blocks: [
+            {
+              type: 'section',
+              text: {
+                type: 'mrkdwn',
+                text: '*text*'
+              }
+            },
+            {
+              type: 'section',
+              fields: [
+                {
+                  type: 'mrkdwn',
+                  text: '*URL:*\n<https://pull_request_html_url|Pull Request URL>'
+                },
+                {
+                  type: 'mrkdwn',
+                  text: '*Created by:*\n<https://github.com/user|user>'
+                }
+              ]
+            },
+            {
+              type: 'section',
+              fields: [
+                {
+                  type: 'mrkdwn',
+                  text: '*Parameters:*\nparam_1,param_2,param_3'
+                },
+                {
+                  type: 'mrkdwn',
+                  text: '*Terraform plan:*\nfailure'
+                }
+              ]
+            },
+            {
+              type: 'section',
+              fields: [
+                {
+                  type: 'mrkdwn',
+                  text: '*Commit:*\n<https://repository_html_url/commit/123456789|1234567>'
+                },
+                {
+                  type: 'mrkdwn',
+                  text: '*Actions:*\n<https://repository_html_url/actions/runs/987654321|workflow>'
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    };
+
+    const message = MessageFormatter.format(createMessage({ planStatus: 'failure' }));
 
     expect(message).toEqual(expectedMessage);
   });
