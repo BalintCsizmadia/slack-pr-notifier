@@ -26,3 +26,15 @@
       job-status: ${{ job_status }}
       plan-status: ${{ terraform_plan_outcome }}
 ```
+---
+
+### Development instructions
+#
+#### Compile code into one file used for distribution
+- npm i -g @vercel/ncc
+- ncc build index.js --license licenses.txt
+#### Create new release version
+- git commit -m "release x"
+- git tag -a -m "release x" v1
+- git push --follow-tags
+#
