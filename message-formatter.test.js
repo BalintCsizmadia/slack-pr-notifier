@@ -15,18 +15,11 @@ describe('MessageFormatter', () => {
 
   it('returns a properly formatted message', () => {
     const expectedMessage = {
-      text: 'text',
+      text: '*text*',
       attachments: [
         {
           color: '#2eb886',
           blocks: [
-            {
-              type: 'section',
-              text: {
-                type: 'mrkdwn',
-                text: '*text*'
-              }
-            },
             {
               type: 'section',
               fields: [
@@ -78,18 +71,11 @@ describe('MessageFormatter', () => {
 
   it('returns a properly formatted message if Terraform plan has been failed', () => {
     const expectedMessage = {
-      text: 'text',
+      text: '*text*',
       attachments: [
         {
           color: '#FF0000',
           blocks: [
-            {
-              type: 'section',
-              text: {
-                type: 'mrkdwn',
-                text: '*text*'
-              }
-            },
             {
               type: 'section',
               fields: [
@@ -140,22 +126,9 @@ describe('MessageFormatter', () => {
   });
 
   it('returns a properly formatted message if isBasic property is true', () => {
-    const expectedMessage = {
-      blocks: [
-        {
-          type: 'section',
-          text: {
-            type: 'plain_text',
-            text: 'text',
-            emoji: true
-          }
-        }
-      ]
-    };
-
     const message = MessageFormatter.format(createMessage({ isBasic: true }));
 
-    expect(message).toEqual(expectedMessage);
+    expect(message).toEqual({ text: 'text' });
   });
 
   it('throws error if isBasic is not true and parameter(s) is/are missing', () => {

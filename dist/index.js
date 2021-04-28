@@ -26,12 +26,11 @@ class MessageFormatter {
     const commitId = github.context.sha.substring(0, 7);
 
     return {
-      text: message.text,
+      ...this._createBasicMessage(message.text, 'title'),
       attachments: [
         {
           color: this._transformColor(message.jobStatus, message.planStatus),
           blocks: [
-            this._createSection(message.text, 'title'),
             this._createSectionWithFields([
               `*URL:*\n<${pullRequestUrl}|Pull Request URL>`,
               `*Created by:*\n<https://github.com/${message.createdBy}|${message.createdBy}>`
@@ -80,18 +79,9 @@ class MessageFormatter {
     };
   }
 
-  static _createBasicMessage(text) {
+  static _createBasicMessage(content, contentType = '') {
     return {
-      blocks: [
-        {
-          type: 'section',
-          text: {
-            type: 'plain_text',
-            text,
-            emoji: true
-          }
-        }
-      ]
+      text: contentType === 'title' ? `*${content}*` : content
     };
   }
 
