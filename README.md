@@ -5,7 +5,7 @@
 ##### Basic
 ```
 - name: Slack Notification
-    uses: BalintCsizmadia/slack-pr-notifier@v1.0.0
+    uses: BalintCsizmadia/slack-pr-notifier@v1.0.1
     with:
       slack-webhook: ${{ secrets.WEBHOOK }}
       slack-channel: ${{ slack_channel }}
@@ -15,7 +15,7 @@
 ##### Special (Post notification about Terraform plan status, triggered by Pull Request)
 ```
 - name: Slack Notification
-    uses: BalintCsizmadia/slack-pr-notifier@v1.0.0
+    uses: BalintCsizmadia/slack-pr-notifier@v1.0.1
     if: github.event_name == 'pull_request'
     with:
       slack-webhook: ${{ secrets.WEBHOOK }}
